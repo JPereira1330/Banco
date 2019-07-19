@@ -27,33 +27,38 @@ int Conta::deposito(int valor) {
     
     // Verificando se valor para deposito é negativo
     if( valor < 0 ){
-        return 1;
+        return 0;
     }
     
     setCreditoPendente(valor);    
-    return 0;
+    return 1;
 }
 
 int Conta::sacar(int valor) {
     
+    // Verifica se existe dinheiro na conta
+    if( this->getSaldoDisponivel() > valor){
+        return 0;
+    }
+    
     // Verificando se valor para deposito é negativo
     if( valor < 0 ){
-        return 1;
+        return 0;
     }
     
     setCreditoPendente(valor * (-1));    
-    return 0;
+    return 1;
 }
 
 int Conta::save() {
     setSaldoDisponivel( getSaldoDisponivel() + getCreditoPendente() );
     setCreditoPendente(0);
-    return 0;
+    return 1;
 }
 
 int Conta::rollback() {
     setCreditoPendente(0);
-    return 0;
+    return 1;
 }
 
 

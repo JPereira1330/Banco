@@ -22,11 +22,12 @@ public:
 
     int getNumeroConta();
     Conta getNovaConta(int numeroConta);
-    void printMenuConta();
-
+    int printMenuConta(Conta *conta);
+    int getValorSacado();
+    int getValorDepositado();
+    
 private:
     void clear();
-
     
 };
 

@@ -54,9 +54,55 @@ Conta Interface::getNovaConta(int numeroConta){
     return conta;
 }
 
-void Interface::printMenuConta() {
+int Interface::printMenuConta(Conta *conta) {
 
+    int op;
+    
+    clear();
+    cout << " [ MENU PRINCIPAL " << conta->getNumeroConta() << " ] " << endl;
+    cout << endl;
+    cout << " [ 1 ] Sacar Dinheiro" << endl;
+    cout << " [ 2 ] Depositar Dinheiro" << endl;
+    cout << " [ 3 ] Transferir Dinheiro" << endl;
+    cout << " [ 4 ] Extrato da conta" << endl;
+    cout << " [ 9 ] Sair da conta" << endl;
+    cin >> op;
+    
+    switch(op){
+        case 1:
+            return getValorSacado();
+            break;
+    }
+    
+    return 0;
 }
+
+int Interface::getValorSacado() {
+    
+    int valor;
+    
+    clear();
+    cout << " [ MENU PRINCIPAL - SAQUE ] " << endl;
+    cout << endl;
+    cout << " [ * ] Valor a ser sacado: " << endl;
+    cin >> valor;
+    
+    return valor;
+}
+
+int Interface::getValorDepositado() {
+    
+    int valor;
+    
+    clear();
+    cout << " [ MENU PRINCIPAL - DEPOSITO ] " << endl;
+    cout << endl;
+    cout << " [ * ] Valor a ser depositado: " << endl;
+    cin >> valor;
+    
+    return valor;
+}
+
 
 void Interface::clear() {
     for(int i = i; i<=20; i++){
