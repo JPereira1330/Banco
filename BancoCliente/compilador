@@ -1,0 +1,1 @@
+g++ *.h *.cpp *.c -o teste -l pthread -std=c++11
