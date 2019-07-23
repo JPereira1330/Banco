@@ -13,6 +13,7 @@
 #include "Msg.h"
 #include "Operacoes.h"
 #include "Conta.h"
+#include "sys_log.h"
 
 Interface::Interface() {
 }
@@ -36,22 +37,24 @@ int Interface::getNumeroConta() {
     return numeroConta;
 }
 
-Conta Interface::getNovaConta(int numeroConta){
+int Interface::getNovaConta(Conta *conta){
 
     string nomeTitular;
+    int saldo;
     
     clear();
     cout << " [ MENU PRINCIPAL - NOVA CONTA ] " << endl;
     cout << endl;
-    cout << " [ * ] Numero da conta: " << numeroConta << endl;
+    cout << " [ * ] Numero da conta: " << conta->getNumeroConta() << endl;
     cout << " [ * ] Nome do tiular: ";
     cin >> nomeTitular;
+    cout << " [ * ] Saldo da Conta: R$";
+    cin >> saldo;
     
-    Conta conta;
-    conta.setNumeroConta(numeroConta);
-    conta.setTitularConta(nomeTitular);
+    conta->setTitularConta(nomeTitular);
+    conta->setSaldoDisponivel(saldo);
     
-    return conta;
+    return 1;
 }
 
 int Interface::printMenuConta(Conta *conta) {
@@ -59,22 +62,19 @@ int Interface::printMenuConta(Conta *conta) {
     int op;
     
     clear();
-    cout << " [ MENU PRINCIPAL " << conta->getNumeroConta() << " ] " << endl;
+    cout << " [ MENU PRINCIPAL ] " << endl;
+    cout << endl;
+    cout << "Numero Conta: " << conta->getNumeroConta() << endl;
+    cout << "Titular: " << conta->getTitularConta() << endl;
     cout << endl;
     cout << " [ 1 ] Sacar Dinheiro" << endl;
     cout << " [ 2 ] Depositar Dinheiro" << endl;
     cout << " [ 3 ] Transferir Dinheiro" << endl;
-    cout << " [ 4 ] Extrato da conta" << endl;
+    cout << " [ 4 ] Saldo da conta" << endl;
     cout << " [ 9 ] Sair da conta" << endl;
     cin >> op;
     
-    switch(op){
-        case 1:
-            return getValorSacado();
-            break;
-    }
-    
-    return 0;
+    return op;
 }
 
 int Interface::getValorSacado() {
@@ -95,12 +95,19 @@ int Interface::getValorDepositado() {
     int valor;
     
     clear();
-    cout << " [ MENU PRINCIPAL - DEPOSITO ] " << endl;
+    cout << " [ DEPOSITO ] " << endl;
     cout << endl;
     cout << " [ * ] Valor a ser depositado: " << endl;
     cin >> valor;
     
     return valor;
+}
+
+void Interface::printSaldoConta(int valor) {
+    cout << " [ SALDO DA CONTA ] " << endl;
+    cout << endl;
+    cout << " [ * ] Saldo: R$" << valor << endl;
+    cout << endl;
 }
 
 

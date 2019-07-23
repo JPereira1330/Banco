@@ -21,10 +21,11 @@ public:
     virtual ~Interface();
 
     int getNumeroConta();
-    Conta getNovaConta(int numeroConta);
+    int getNovaConta(Conta *conta);
     int printMenuConta(Conta *conta);
     int getValorSacado();
     int getValorDepositado();
+    void printSaldoConta(int valor);
     
 private:
     void clear();

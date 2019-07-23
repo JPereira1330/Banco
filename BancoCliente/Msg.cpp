@@ -25,6 +25,10 @@ Msg::~Msg() {
     }
 }
 
+char Msg::getType() {
+    return  this->type;
+}   
+
 void Msg::setType(char type) {
     this->type = type;
 }

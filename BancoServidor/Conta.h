@@ -55,7 +55,7 @@ public:
     
     // Setter's
     void setTitularConta(string nome);
-    void setNumeroConta(int numero);
+    void setNumeroConta(int numeroConta);
     void setSaldoDisponivel(int saldo);
     void setCreditoPendente(int credito);
     

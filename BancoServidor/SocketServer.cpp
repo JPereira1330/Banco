@@ -10,6 +10,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <list>
+#include <stdio.h>
 
 #include "SocketServer.h"
 
@@ -74,12 +75,11 @@ int SocketServer::readSocket(int handler, void* buffer, unsigned int len) {
         if(bytes > 0){
             totalBytes += bytes;
         }
-    } while (bytes > 0 && totalBytes < len);
+    } while (bytes > 0 && totalBytes < (int) len);
     
-    if(bytes < 0){
+    if(bytes <= 0){
         return bytes;
     }
-    
     return totalBytes;
 }
 
@@ -96,7 +96,7 @@ int SocketServer::writeSocket(int handler, void* buffer, unsigned int len) {
         if(bytes > 0){
             totalBytes += bytes;
         }
-    } while (bytes > 0 && totalBytes < len);
+    } while (bytes > 0 && totalBytes < (int) len);
     
     if(bytes < 0){
         return bytes;

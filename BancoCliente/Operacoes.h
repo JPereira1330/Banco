@@ -10,6 +10,7 @@
 
 #include "SocketClient.h"
 #include "Conta.h"
+#include "Msg.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ public:
      *         2 Erro de conexão,
      *         3 Erro estrutural
      */
-    int loadConta(int numeroConta);
+    int loadConta(Conta *conta);
     
     /**
      * Envia para o sevidor uma conta para ser cadastrada
@@ -57,8 +58,18 @@ public:
      */
     int depositarDinheiroConta(Conta *conta, int deposito);
     
+    /**
+     * 
+     * @param conta
+     * @return 
+     */
+    int saldoDinheiroConta(Conta *conta);
+    
 private:
     SocketClient *sockClient;
+    
+    int getServerConta(Conta *conta, Msg *msg, int len);
+    int readMsg(SocketClient *sc, Msg *msg);
     
 };
 
