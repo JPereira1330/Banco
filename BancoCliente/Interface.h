@@ -9,6 +9,7 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
+#include "string.h"
 #include "SocketClient.h"
 #include "Conta.h"
 
@@ -23,9 +24,10 @@ public:
     int getNumeroConta();
     int getNovaConta(Conta *conta);
     int printMenuConta(Conta *conta);
-    int getValorSacado();
-    int getValorDepositado();
+    int getValor(string titulo, string dado);
     void printSaldoConta(int valor);
+    void printRetDeposito(int retorno);
+    void printRetSaque(int retorno);
     
 private:
     void clear();

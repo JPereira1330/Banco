@@ -49,8 +49,6 @@ Conta* ClientProcessor::GetConta() {
     return conta;
 }
 
-
-
 int ClientProcessor::start() {
     thread runThread(ClientProcessor::run, this);
     runThread.detach();
@@ -68,35 +66,37 @@ void ClientProcessor::run(ClientProcessor* cp) {
     
     do{
         len = 0;
-        log_write("Handle da leitura: %d", cp->getHandle());
+        log_write("Run [Handle: %d] - Aguardando envio de pacotes.", cp->getHandle());
         ret = SocketServer::readSocket(cp->getHandle(), &len, sizeof(unsigned int));
-
+        log_write("Run [Handle: %d] - Recebido: %d bytes.", cp->getHandle(), ret);
+                
         if(ret <= 0){
-            log_write("Cliente desconectou: %d", cp->getHandle());
+            log_write("Run [Handle: %d] - Cliente desconectou.", cp->getHandle());
             SocketServer::shutdownSocket(cp->getHandle());
             return;
         }   
 
-        log_write("Tamanho da mensagem: %d", len);
         ret = SocketServer::readSocket(cp->getHandle(), &type, sizeof(char));
-
+        log_write("Run [Handle: %d] - Recebido: %d bytes.", cp->getHandle(), ret);
+        log_write("Run [Handle: %d] - Tipo de mensagem: %c.", cp->getHandle(), type);
+        
         if(ret <= 0){
-            log_write("Cliente desconectou: %d", cp->getHandle());
+            log_write("Run [Handle: %d] - Cliente desconectou.", cp->getHandle());
             SocketServer::shutdownSocket(cp->getHandle());
             return;
         }
-
-        log_write("Tipo recebido: %c", type);
         
+        log_write("Run [Handle: %d] - Criando pacote.", cp->getHandle());
         msg = new Msg;
         msg->setType(type);
         
         if(len > 0){
             buffer = (char *) malloc(len);
             ret = SocketServer::readSocket(cp->getHandle(), buffer, len);
-
+            log_write("Run [Handle: %d] - Tamanho recebido: %d", cp->getHandle(), ret);
+            
             if(ret <= 0){
-                log_write("Cliente desconectou: %d", cp->getHandle());
+                log_write("Run [Handle: %d] - Cliente desconectou.", cp->getHandle());
                 SocketServer::shutdownSocket(cp->getHandle());
                 delete(msg);
                 return;
@@ -108,28 +108,46 @@ void ClientProcessor::run(ClientProcessor* cp) {
         switch(type){
             case 'C':
                 if (cp->GetConta() != NULL){
-                    log_write("Conta ja estava carregada %d", cp->conta->getNumeroConta());
+                    log_write("Run [Handle: %d] - Conta já carregada: %d.", cp->getHandle(),cp->conta->getNumeroConta());
                 }else{
-                    log_write("Carregando conta");
+                    log_write("Run [Handle: %d] - Carregando conta.", cp->getHandle());
                     cp->SetConta(loadAcc(msg,cp));
                 }
-                
                 break;
+                
             case 'N':
                 if (cp->GetConta() != NULL){
-                    log_write("Conta ja estava carregada %d", cp->conta->getNumeroConta());
+                    log_write("Run [Handle: %d] - Conta já carregada: %d.", cp->getHandle(),cp->conta->getNumeroConta());
                 }else{
-                    log_write("Criando conta");
+                    log_write("Run [Handle: %d] - Criando Conta.", cp->getHandle());
                     cp->SetConta(saveAcc(msg,cp));
                 }
-                
                 break;
+                
             case 'E':
                 if (cp->GetConta() != NULL){
-                    log_write("Tirando saldo");
+                    log_write("Run [Handle: %d] - Carregando saldo.", cp->getHandle());
                     saldoAcc(cp,cp->GetConta());
                 }else{
-                    log_write("Conta nao criada em memoria");
+                    log_write("Run [Handle: %d] - Conta nao carregada.", cp->getHandle());
+                }
+                break;
+                
+            case 'D':
+                if (cp->GetConta() != NULL){
+                    log_write("Run [Handle: %d] - Deposito.", cp->getHandle());
+                    depositaAcc(msg,cp,cp->GetConta());
+                }else{
+                    log_write("Run [Handle: %d] - Conta nao carregada.", cp->getHandle());
+                }
+                break;
+                
+            case 'S':
+                if (cp->GetConta() != NULL){
+                    log_write("Run [Handle: %d] - Saque.", cp->getHandle());
+                    saqueAcc(msg,cp,cp->GetConta());
+                }else{
+                    log_write("Run [Handle: %d] - Conta nao carregada.", cp->getHandle());
                 }
                 break;
         }
@@ -147,32 +165,34 @@ Conta *ClientProcessor::loadAcc(Msg *msg, ClientProcessor *cp) {
     Conta *conta;
     
     msg->next(&numeroConta);
-    log_write("Numero da conta carregado: %d", numeroConta);
+    log_write("LoadAcc [Handle: %d] - Conta recebida: %d", cp->getHandle(), numeroConta);
     
+    log_write("LoadAcc [Handle: %d] - Procurando por conta: %d", cp->getHandle(), numeroConta);
     conta = cp->getBanco()->searchFile(numeroConta);
     
     if(conta == NULL){
-        log_write("Nao foi possivel carregar a conta: %d", numeroConta);
+        log_write("LoadAcc [Handle: %d] - Conta não encontrada: %d", cp->getHandle(), numeroConta);
         msgReturn = new Msg();
         msgReturn->setType('c');
         len = msgReturn->getBuffer(&buffer);
         len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
-        log_write("Enviando %d Bytes", len);
+        log_write("LoadAcc [Handle: %d] - Dados enviados: %d", cp->getHandle(), len);
         return NULL;
     }
     
-    log_write("Conta encontrada: %d", numeroConta);
+    log_write("LoadAcc [Handle: %d] - Conta encontrada: %d", cp->getHandle(), numeroConta);
     
-    // Preparando pacote para enviar para o cliente
+    log_write("LoadAcc [Handle: %d] - Criando pacote.", cp->getHandle());
     msgReturn = new Msg();
     msgReturn->setType('C');
     msgReturn->add(conta->getNumeroConta());
     msgReturn->add( (char *) conta->getTitularConta().c_str(), conta->getTitularConta().size());
     
     len = msgReturn->getBuffer(&buffer);
-    len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+    log_write("LoadAcc [Handle: %d] - Tamanho do buffer: %d bytes.", cp->getHandle(), len);
     
-    log_write("Enviando %d Bytes", len);
+    len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+    log_write("LoadAcc [Handle: %d] - Dados enviados: %d bytes.", cp->getHandle(), len);
     
     return conta;
 }
@@ -189,7 +209,7 @@ Conta *ClientProcessor::saveAcc(Msg *msg, ClientProcessor *cp) {
     Conta *conta;
     
     msg->next(&numeroConta);
-    log_write("Numero da conta carregado: %d", numeroConta);
+    log_write("SaveAcc - Conta %d carregada.", numeroConta);
     
     len = msg->next(&titular);
     strTitular = string(titular,len);
@@ -222,21 +242,32 @@ Conta *ClientProcessor::saveAcc(Msg *msg, ClientProcessor *cp) {
 
 int ClientProcessor::depositaAcc(Msg *msg, ClientProcessor *cp, Conta  *conta) {
    
+    int ret;
     int len;
+    int valor;
     char *buffer;
     Msg *msgReturn;
-    int valor;
     
     msg->next(&valor);
     log_write("Valor carregado: %d", valor);
-
-    /*
-     * ARRUMAR
-     */
-    cp->getBanco()->searchFile(conta->getNumeroConta())->setSaldoDisponivel(valor);
+    
+    msgReturn = new Msg();
+    ret = conta->deposito(valor);
+    
+    if(ret == 0){
+        log_write("Deposito não foi efetuado na conta %d no valor de %d", conta->getNumeroConta(), valor);
+        conta->rollback();
+        msgReturn->setType('d');
+        len = msgReturn->getBuffer(&buffer);
+        len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+        log_write("Enviando %d Bytes", len);
+        
+        return 0;
+    }
+    
+    conta->save();
     
     log_write("Deposito efetuado na conta %d no valor de %d", conta->getNumeroConta(), valor);
-    msgReturn = new Msg();
     msgReturn->setType('D');
     len = msgReturn->getBuffer(&buffer);
     len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
@@ -244,7 +275,45 @@ int ClientProcessor::depositaAcc(Msg *msg, ClientProcessor *cp, Conta  *conta) {
     
     delete(msgReturn);
     
-    return 0;
+    return 1;
+}
+
+int ClientProcessor::saqueAcc(Msg *msg, ClientProcessor *cp, Conta  *conta) {
+   
+    int ret;
+    int len;
+    int valor;
+    char *buffer;
+    Msg *msgReturn;
+    
+    msg->next(&valor);
+    log_write("Saque [Handle: %d] - Valor carregado: %d.", cp->getHandle(),valor);
+    
+    msgReturn = new Msg();
+    ret = conta->sacar(valor);
+    
+    if(ret == 0){
+        log_write("Saque [Handle: %d] - Não foi possivel realizar o saque.", cp->getHandle());
+        conta->rollback();
+        msgReturn->setType('d');
+        len = msgReturn->getBuffer(&buffer);
+        len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+        log_write("Saque [Handle: %d] - Enviando: %d Bytes.", cp->getHandle(), len);
+        
+        return 0;
+    }
+    
+    conta->save();
+    
+    log_write("Saque [Handle: %d] - Saque realizado com sucesso.", cp->getHandle());
+    msgReturn->setType('D');
+    len = msgReturn->getBuffer(&buffer);
+    len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+    log_write("Saque [Handle: %d] - Enviando: %d Bytes.", cp->getHandle(), len);
+    
+    delete(msgReturn);
+    
+    return 1;
 }
 
 int ClientProcessor::saldoAcc(ClientProcessor* cp, Conta *conta) {

@@ -28,7 +28,6 @@ int Interface::getNumeroConta() {
 
     unsigned int numeroConta;
 
-    clear();
     cout << " [ BANCO JC ] " << endl;
     cout << endl;
     cout << " [ * ] Digite o numero da conta: " << endl;
@@ -41,8 +40,7 @@ int Interface::getNovaConta(Conta *conta){
 
     string nomeTitular;
     int saldo;
-    
-    clear();
+
     cout << " [ MENU PRINCIPAL - NOVA CONTA ] " << endl;
     cout << endl;
     cout << " [ * ] Numero da conta: " << conta->getNumeroConta() << endl;
@@ -61,7 +59,6 @@ int Interface::printMenuConta(Conta *conta) {
 
     int op;
     
-    clear();
     cout << " [ MENU PRINCIPAL ] " << endl;
     cout << endl;
     cout << "Numero Conta: " << conta->getNumeroConta() << endl;
@@ -77,27 +74,13 @@ int Interface::printMenuConta(Conta *conta) {
     return op;
 }
 
-int Interface::getValorSacado() {
+int Interface::getValor(string titulo, string dado) {
     
     int valor;
     
-    clear();
-    cout << " [ MENU PRINCIPAL - SAQUE ] " << endl;
+    cout << " [ "<< titulo << " ] " << endl;
     cout << endl;
-    cout << " [ * ] Valor a ser sacado: " << endl;
-    cin >> valor;
-    
-    return valor;
-}
-
-int Interface::getValorDepositado() {
-    
-    int valor;
-    
-    clear();
-    cout << " [ DEPOSITO ] " << endl;
-    cout << endl;
-    cout << " [ * ] Valor a ser depositado: " << endl;
+    cout << " [ * ] "<< dado <<": R$" << endl;
     cin >> valor;
     
     return valor;
@@ -108,6 +91,30 @@ void Interface::printSaldoConta(int valor) {
     cout << endl;
     cout << " [ * ] Saldo: R$" << valor << endl;
     cout << endl;
+}
+
+void Interface::printRetDeposito(int retorno) {
+    cout << " [ DEPOSITO ] " << endl;
+    switch(retorno){
+        case 0:
+            cout << "[ * ] Não foi possivel realizar o deposito." << endl;
+            break;
+        case 1:
+            cout << "[ * ] Depositado." << endl;
+            break;
+    }
+}
+
+void Interface::printRetSaque(int retorno) {
+    cout << " [ SAQUE ] " << endl;
+    switch(retorno){
+        case 0:
+            cout << "[ * ] Não foi possivel realizar o saque." << endl;
+            break;
+        case 1:
+            cout << "[ * ] Saque efetuado." << endl;
+            break;
+    }
 }
 
 

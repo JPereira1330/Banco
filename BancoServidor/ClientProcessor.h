@@ -44,6 +44,7 @@ private:
     static Conta *loadAcc(Msg *msg, ClientProcessor *cp);
     static Conta *saveAcc(Msg *msg, ClientProcessor *cp);
     static int depositaAcc(Msg *msg, ClientProcessor *cp, Conta *conta);
+    static int saqueAcc(Msg *msg, ClientProcessor *cp, Conta *conta);
     static int saldoAcc(ClientProcessor *cp, Conta *conta);
     
 };
