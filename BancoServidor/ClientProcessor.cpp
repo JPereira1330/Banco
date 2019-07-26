@@ -50,7 +50,6 @@ Conta* ClientProcessor::GetConta() {
 }
 
 int ClientProcessor::start() {
-    
     log_write("Start - Carregando save.");
     bancoDB->loadFile();
     
@@ -60,7 +59,6 @@ int ClientProcessor::start() {
 }
 
 void ClientProcessor::run(ClientProcessor* cp) {
-    
     int len;
     int ret;
     char type;
@@ -160,6 +158,7 @@ void ClientProcessor::run(ClientProcessor* cp) {
                 }else{
                     log_write("Run [Handle: %d] - Conta nao carregada.", cp->getHandle());
                 }
+                break;
             case 'X':
                 log_write("Run [Handle: %d] - Solicitado desligamento do servidor.", cp->getHandle());
                 ret = cp->getBanco()->saveFile();
@@ -177,7 +176,6 @@ void ClientProcessor::run(ClientProcessor* cp) {
 }
 
 Conta *ClientProcessor::loadAcc(Msg *msg, ClientProcessor *cp) {
-   
     int len;
     char *buffer;
     Msg *msgReturn;
@@ -217,8 +215,7 @@ Conta *ClientProcessor::loadAcc(Msg *msg, ClientProcessor *cp) {
     return conta;
 }
 
-Conta *ClientProcessor::saveAcc(Msg *msg, ClientProcessor *cp) {
-   
+Conta *ClientProcessor::saveAcc(Msg *msg, ClientProcessor *cp) { 
     int len;
     int saldo;
     char *buffer;
@@ -260,7 +257,6 @@ Conta *ClientProcessor::saveAcc(Msg *msg, ClientProcessor *cp) {
 }
 
 int ClientProcessor::depositaAcc(Msg *msg, ClientProcessor *cp, Conta  *conta) {
-   
     int ret;
     int len;
     int valor;
@@ -298,7 +294,6 @@ int ClientProcessor::depositaAcc(Msg *msg, ClientProcessor *cp, Conta  *conta) {
 }
 
 int ClientProcessor::saqueAcc(Msg *msg, ClientProcessor *cp, Conta  *conta) {
-   
     int ret;
     int len;
     int valor;
@@ -336,7 +331,6 @@ int ClientProcessor::saqueAcc(Msg *msg, ClientProcessor *cp, Conta  *conta) {
 }
 
 int ClientProcessor::saldoAcc(ClientProcessor* cp, Conta *conta) {
-    
     int len;
     int saldo;
     Msg *msg;
@@ -358,7 +352,6 @@ int ClientProcessor::saldoAcc(ClientProcessor* cp, Conta *conta) {
 }
 
 int ClientProcessor::transferenciaAcc(Msg *msg, ClientProcessor *cp, Conta *conta){
-    
     int destino;
     int valor;
     int ret;
@@ -389,6 +382,17 @@ int ClientProcessor::transferenciaAcc(Msg *msg, ClientProcessor *cp, Conta *cont
     }
     
     log_write("Transferencia [Handle: %d] - Conta %d encontrada.", cp->getHandle(),destino);
+    
+    if(conta->getNumeroConta() == dest->getNumeroConta()){
+        log_write("Transferencia [Handle: %d] - Transferencia para a mesma conta.", cp->getHandle(),destino);
+        msgReturn->setType('t');
+        len = msgReturn->getBuffer(&buffer);
+        len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+        log_write("Transferencia [Handle: %d] - Enviando: %d Bytes.", cp->getHandle(), len);
+        delete(msgReturn);
+        return 0;
+    }
+    
     
     log_write("Transferencia [Handle: %d] - Saque da conta origem: %d.", cp->getHandle(), valor);
     ret = conta->sacar(valor);

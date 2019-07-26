@@ -132,7 +132,6 @@ unsigned int Msg::getBuffer(char** buffer) {
 }
 
 int Msg::next(int *valor) {
-   
     if(this->position + sizeof(int) > this->lenBuffer){
         return 0;
     }
@@ -144,7 +143,6 @@ int Msg::next(int *valor) {
 }
 
 int Msg::next(unsigned int* valor) {
-
     if(this->position + sizeof(unsigned int) > this->lenBuffer){
         return 0;
     }
@@ -156,7 +154,6 @@ int Msg::next(unsigned int* valor) {
 }
 
 unsigned int Msg::next(char** str) {
-
     unsigned int len;
     
     if(this->position + sizeof(unsigned int) > this->lenBuffer){

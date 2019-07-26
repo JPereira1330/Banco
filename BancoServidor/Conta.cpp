@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string.h>
 #include "Conta.h"
+#include "sys_log.h"
 
 Conta::Conta() {
 }
@@ -30,17 +31,21 @@ int Conta::deposito(int valor) {
         return 0;
     }
     
-    setCreditoPendente(valor);    
+    setCreditoPendente(valor);
     return 1;
 }
 
 int Conta::sacar(int valor) {
     
-    // Verificando se valor para deposito é negativo
-    if( valor < 0 ){
+    log_write("Temp - %d < %d", valor, this->getSaldoDisponivel());
+    
+    // Verificando se possui saldo
+    if( valor > this->getSaldoDisponivel() ){
+        log_write("Temp - Entrou!");
         return 0;
     }
     
+    log_write("Temp - Passou!!");
     setCreditoPendente(valor * (-1));    
     return 1;
 }

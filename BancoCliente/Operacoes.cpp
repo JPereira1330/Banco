@@ -34,7 +34,6 @@ SocketClient *Operacoes::getSocketClient() {
 }
 
 void Operacoes::start() {
-      
     int ret;
     int valor;
     Conta *conta;
@@ -108,7 +107,6 @@ void Operacoes::start() {
 }
 
 int Operacoes::loadConta(Conta *conta) {
-
     char *buffer;
     char tipo;
     Msg *msg;
@@ -165,7 +163,6 @@ int Operacoes::loadConta(Conta *conta) {
 }
 
 int Operacoes::saveConta(Conta *conta) {
-
     char tipo;
     Msg *msg;
     char *buffer;
@@ -212,7 +209,6 @@ int Operacoes::saveConta(Conta *conta) {
 }
 
 int Operacoes::sacarDinheiroConta(Conta* conta, int saque) {
-    
     int len;
     int saldo;
     char tipo;
@@ -258,7 +254,6 @@ int Operacoes::sacarDinheiroConta(Conta* conta, int saque) {
 }
 
 int Operacoes::depositarDinheiroConta(Conta* conta, int deposito) {
-
     int saldo;
     int len;
     char tipo;
@@ -304,7 +299,6 @@ int Operacoes::depositarDinheiroConta(Conta* conta, int deposito) {
 }
 
 int Operacoes::getServerConta(Conta* conta, Msg *msg, int len) {
-    
     char *buffer;
     int ret;
     int numeroConta;
@@ -334,7 +328,6 @@ int Operacoes::getServerConta(Conta* conta, Msg *msg, int len) {
 }
 
 int Operacoes::saldoDinheiroConta(Conta* conta) {
-    
     int len;
     Msg *msg;
     char *buffer;
@@ -369,7 +362,6 @@ int Operacoes::saldoDinheiroConta(Conta* conta) {
 }
 
 int Operacoes::transferirDinheiroConta(Conta* origem, int destino, int valor) {
-    
     int len;
     Msg *msg;
     char *buffer;
@@ -423,7 +415,6 @@ int Operacoes::transferirDinheiroConta(Conta* origem, int destino, int valor) {
 
 
 int Operacoes::readMsg(SocketClient* sc, Msg* msg) {
-    
     int ret;
     int len;
     char tipo;
@@ -465,7 +456,6 @@ int Operacoes::readMsg(SocketClient* sc, Msg* msg) {
 }
 
 int Operacoes::solicitaDesligamentoSrv(){
-    
     int len;
     Msg *msg;
     char *buffer;
