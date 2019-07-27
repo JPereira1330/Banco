@@ -372,7 +372,6 @@ int Operacoes::transferirDinheiroConta(Conta* origem, int destino, int valor) {
     log_write("Transferencia - Criando pacote.");
     msg = new Msg();
     msg->setType('T');
-    msg->add(origem->getNumeroConta());
     msg->add(destino);
     msg->add(valor);
     

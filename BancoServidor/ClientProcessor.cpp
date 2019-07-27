@@ -63,7 +63,6 @@ void ClientProcessor::run(ClientProcessor* cp) {
     char *buffer;
     Msg *msg;
 
-    
     do{
         len = 0;
         log_write("Run [Handle: %d] - Aguardando comunicacao do cliente.", cp->getHandle());
@@ -150,6 +149,13 @@ void ClientProcessor::run(ClientProcessor* cp) {
                     log_write("Run [Handle: %d] - Conta nao carregada.", cp->getHandle());
                 }
                 break;
+            case 'T':
+                if(cp->GetConta() != NULL){
+                    log_write("Run [Handle: %d] - Transferencia.", cp->getHandle());
+                    transferenciaAcc(msg,cp,cp->GetConta());
+                }else{
+                    log_write("Run [Handle: %d] - Conta nao carregada.", cp->getHandle());
+                }
         }
         
         delete(msg);
@@ -337,5 +343,77 @@ int ClientProcessor::saldoAcc(ClientProcessor* cp, Conta *conta) {
     return 1;
 }
 
+int ClientProcessor::transferenciaAcc(Msg *msg, ClientProcessor *cp, Conta *conta){
+    
+    int destino;
+    int valor;
+    int ret;
+    int len;
+    char *buffer;
+    Msg *msgReturn;
+    Conta *dest;
+    
+    msgReturn = new Msg();
+    
+    msg->next(&destino);
+    log_write("Transferencia [Handle: %d] - Conta destino: %d.", cp->getHandle(),destino);
+    
+    msg->next(&valor);
+    log_write("Transferencia [Handle: %d] - Valor a ser transferido: %d.", cp->getHandle(),valor);
+    
+    dest = new Conta();
+    dest = cp->getBanco()->searchFile(destino);
+    
+    if(dest == NULL){
+        log_write("Transferencia [Handle: %d] - Conta %d não encontrada.", cp->getHandle(),destino);
+        msgReturn->setType('t');
+        len = msgReturn->getBuffer(&buffer);
+        len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+        log_write("Transferencia [Handle: %d] - Enviando: %d Bytes.", cp->getHandle(), len);
+        delete(msgReturn);
+        return 0;
+    }
+    
+    log_write("Transferencia [Handle: %d] - Conta %d encontrada.", cp->getHandle(),destino);
+    
+    log_write("Transferencia [Handle: %d] - Saque da conta origem: %d.", cp->getHandle(), valor);
+    ret = conta->sacar(valor);
 
+    if(ret != 1){
+        log_write("Transferencia [Handle: %d] - Nao foi possivel sacar o dinheiro.", cp->getHandle());
+        conta->rollback();
+        msgReturn->setType('t');
+        len = msgReturn->getBuffer(&buffer);
+        len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+        log_write("Saque [Handle: %d] - Enviando: %d Bytes.", cp->getHandle(), len);
+        delete(msgReturn);
+        return 0;
+    }
+    
+    log_write("Transferencia [Handle: %d] - Deposito da conta destino: %d.", cp->getHandle(), valor);
+    ret = dest->deposito(valor);
 
+    if(ret != 1){
+        log_write("Transferencia [Handle: %d] - Nao foi possivel depositar o dinheiro.", cp->getHandle());
+        dest->rollback();
+        conta->rollback();
+        msgReturn->setType('t');
+        len = msgReturn->getBuffer(&buffer);
+        len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+        log_write("Saque [Handle: %d] - Enviando: %d Bytes.", cp->getHandle(), len);
+        delete(msgReturn);
+        return 0;
+    }
+
+    conta->save();
+    dest->save();
+    log_write("Transferencia [Handle: %d] - Salvando alteracoes.", cp->getHandle());
+    
+    msgReturn->setType('T');
+    len = msgReturn->getBuffer(&buffer);
+    len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
+    log_write("Transferencia [Handle: %d] - Enviando: %d Bytes.", cp->getHandle(), len);
+    
+    delete(msgReturn);
+    return 1;
+}
