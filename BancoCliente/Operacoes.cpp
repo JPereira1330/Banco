@@ -79,12 +79,12 @@ void Operacoes::start() {
                 log_write("Start - Inicializando transferencia.");
                 valor = inter.getValor("Transferencia","Valor a ser transferido.");
                 numeroConta = inter.getNumeroConta();
-                log_write("[TEMP] %d - %d", numeroConta, valor);
+                this->transferirDinheiroConta(conta, numeroConta, valor);
                 break;
                 
             case 4: // Case de extrato 
                 log_write("Start - Inicializando extrato.");
-                saldoDinheiroConta(conta);
+                this->saldoDinheiroConta(conta);
                 inter.printSaldoConta(conta->getSaldoDisponivel());
                 break;
                 
@@ -108,6 +108,7 @@ int Operacoes::loadConta(Conta *conta) {
     char tipo;
     Msg *msg;
     unsigned int len;
+    unsigned int lenBuffer;
     
     log_write("Carregar Conta - Criando pacote");
     msg = new Msg();
@@ -120,7 +121,9 @@ int Operacoes::loadConta(Conta *conta) {
     len = getSocketClient()->writeSocket(buffer, len);
     log_write("Carregar Conta - Dados enviados: %d bytes.", len);
 
-    len = readMsg(this->getSocketClient(), msg);
+    delete(msg);
+    
+    len = getSocketClient()->readSocket(&lenBuffer, sizeof(unsigned int));
     log_write("Carregar Conta - Dados recebido: %d bytes.", len);
     
     if(len == 0){
@@ -129,7 +132,18 @@ int Operacoes::loadConta(Conta *conta) {
         return 0;
     }
     
-    tipo = msg->getType();
+    len = getSocketClient()->readSocket(&tipo, sizeof(char));
+    log_write("Carregar Conta - Dados recebido: %d bytes.", len);
+        
+    if(len == 0){
+        log_write("Carregar Conta - Erro na leitura dos dados.");
+        delete(msg);
+        return 0;
+    }
+    
+    msg = new Msg();
+    msg->setType(tipo);
+
     log_write("Carregar Conta - Tipo recebido: %c.", tipo);   
 
     switch(tipo){
@@ -137,7 +151,7 @@ int Operacoes::loadConta(Conta *conta) {
             delete(msg);
             return 0;
         case 'C':
-            getServerConta(conta, msg, len);
+            getServerConta(conta, msg, lenBuffer);
             delete(msg);
             return 1;
     }
@@ -293,7 +307,7 @@ int Operacoes::getServerConta(Conta* conta, Msg *msg, int len) {
     
     buffer = (char *) malloc(len);
     
-    log_write("getServerConta - Aguardando restante da mensagem.");
+    log_write("getServerConta - Aguardando restante da mensagem. [%d Bytes]", len);
     ret = getSocketClient()->readSocket(buffer, len);
     log_write("getServerConta - Dados recebido: %d bytes.", ret);
     
@@ -348,6 +362,61 @@ int Operacoes::saldoDinheiroConta(Conta* conta) {
     conta->setSaldoDisponivel(saldo);
     return 1;
 }
+
+int Operacoes::transferirDinheiroConta(Conta* origem, int destino, int valor) {
+    
+    int len;
+    Msg *msg;
+    char *buffer;
+    
+    log_write("Transferencia - Criando pacote.");
+    msg = new Msg();
+    msg->setType('T');
+    msg->add(origem->getNumeroConta());
+    msg->add(destino);
+    msg->add(valor);
+    
+    len = msg->getBuffer(&buffer);
+    log_write("Transferencia - Tamanaho do buffer: %d bytes.", len);
+    
+    if(len <= 0){
+        log_write("Erro de leitura");
+        delete(msg);
+        return 0;
+    }
+    
+    len = this->getSocketClient()->writeSocket(buffer, len);
+    log_write("Transferencia - Dados enviados: %d bytes.", len);
+    
+    if(len <= 0){
+        log_write("Erro de leitura");
+        delete(msg);
+        return 0;
+    }
+    
+    len = readMsg(this->getSocketClient(), msg);
+    log_write("Saldo - Dados recebido: %d bytes.", len);
+    
+    if(len <= 0){
+        log_write("Erro de leitura");
+        delete(msg);
+        return 0;
+    }
+
+    switch(msg->getType()){
+        case 't':
+            delete(msg);
+            return 0;
+            break;
+        case 'T':
+            delete(msg);
+            return 1;
+            break;
+    }
+    
+    return 1;
+}
+
 
 int Operacoes::readMsg(SocketClient* sc, Msg* msg) {
     

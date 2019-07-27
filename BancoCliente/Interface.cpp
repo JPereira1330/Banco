@@ -80,8 +80,10 @@ int Interface::getValor(string titulo, string dado) {
     
     cout << " [ "<< titulo << " ] " << endl;
     cout << endl;
-    cout << " [ * ] "<< dado <<": R$" << endl;
+    cout << " [ * ] "<< dado <<": R$";
+    fflush(stdout);
     cin >> valor;
+
     
     return valor;
 }

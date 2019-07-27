@@ -65,6 +65,11 @@ public:
      */
     int saldoDinheiroConta(Conta *conta);
     
+    /**
+     * Transferencia bancaria
+     */
+    int transferirDinheiroConta(Conta *origem, int destino, int valor);
+    
 private:
     SocketClient *sockClient;
     

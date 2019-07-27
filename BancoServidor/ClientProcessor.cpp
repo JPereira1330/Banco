@@ -66,7 +66,7 @@ void ClientProcessor::run(ClientProcessor* cp) {
     
     do{
         len = 0;
-        log_write("Run [Handle: %d] - Aguardando envio de pacotes.", cp->getHandle());
+        log_write("Run [Handle: %d] - Aguardando comunicacao do cliente.", cp->getHandle());
         ret = SocketServer::readSocket(cp->getHandle(), &len, sizeof(unsigned int));
         log_write("Run [Handle: %d] - Recebido: %d bytes.", cp->getHandle(), ret);
                 
@@ -209,32 +209,31 @@ Conta *ClientProcessor::saveAcc(Msg *msg, ClientProcessor *cp) {
     Conta *conta;
     
     msg->next(&numeroConta);
-    log_write("SaveAcc - Conta %d carregada.", numeroConta);
+    log_write("SaveAcc [Handle: %d] - Conta carregada: %d bytes.", cp->getHandle(), numeroConta);
     
     len = msg->next(&titular);
     strTitular = string(titular,len);
-    log_write("Titular da conta carregado: %s", strTitular.c_str());
+    log_write("SaveAcc [Handle: %d] - Titular da conta carregado: %s", cp->getHandle(), strTitular.c_str());
     
     msg->next(&saldo);
-    log_write("Saldo inserido: %d", saldo);
+    log_write("SaveAcc [Handle: %d] - Saldo inserido: %d", cp->getHandle(), saldo);
     
     conta = new Conta();
         
     conta->setNumeroConta(numeroConta);
-        log_write("1");
+
     conta->setTitularConta(strTitular);
-        log_write("2");
+
     conta->setSaldoDisponivel(saldo);
     
-    log_write("antes add");
     cp->getBanco()->add(conta);
     
-    log_write("Conta %d salva no sistema", conta->getNumeroConta());
+    log_write("SaveAcc [Handle: %d] - Conta %d salva no sistema", cp->getHandle(), conta->getNumeroConta());
     msgReturn = new Msg();
     msgReturn->setType('N');
     len = msgReturn->getBuffer(&buffer);
     len = SocketServer::writeSocket(cp->getHandle(),buffer, len);
-    log_write("Enviando %d Bytes", len);
+    log_write("SaveAcc [Handle: %d] - Enviando %d Bytes", cp->getHandle(), len);
     delete(msgReturn);
     
     return conta;
