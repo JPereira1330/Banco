@@ -33,9 +33,6 @@ public:
     int start();
     static void run(ClientProcessor *cp);
     
-   
-
-    
 private:
     int handle;
     BancoDB *bancoDB;

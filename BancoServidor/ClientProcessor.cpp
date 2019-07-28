@@ -50,6 +50,10 @@ Conta* ClientProcessor::GetConta() {
 }
 
 int ClientProcessor::start() {
+    
+    log_write("Start - Carregando save.");
+    bancoDB->loadFile();
+    
     thread runThread(ClientProcessor::run, this);
     runThread.detach();
     return 1;
@@ -156,6 +160,16 @@ void ClientProcessor::run(ClientProcessor* cp) {
                 }else{
                     log_write("Run [Handle: %d] - Conta nao carregada.", cp->getHandle());
                 }
+            case 'X':
+                log_write("Run [Handle: %d] - Solicitado desligamento do servidor.", cp->getHandle());
+                ret = cp->getBanco()->saveFile();
+                if(ret == 1){
+                    log_write("Run [Handle: %d] - Desligando.", cp->getHandle());
+                    exit(1);
+                }
+                log_write("Run [Handle: %d] - Nao foi possivel salvar os arquivos. %d", cp->getHandle(), ret);
+                log_write("Run [Handle: %d] - Desligamento encerrado.", cp->getHandle());
+                break;
         }
         
         delete(msg);

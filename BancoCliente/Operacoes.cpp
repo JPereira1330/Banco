@@ -88,6 +88,11 @@ void Operacoes::start() {
                 inter.printSaldoConta(conta->getSaldoDisponivel());
                 break;
                 
+            case 8: // Solicita o desligamento do servidor
+                log_write("Start - Solicitando desligamento");
+                this->solicitaDesligamentoSrv();
+                break;
+                
             case 9: // Case para finalizar o programa
                 log_write("Start - Encerrando processos.");
                 this->getSocketClient()->shutdownSocket();
@@ -459,4 +464,34 @@ int Operacoes::readMsg(SocketClient* sc, Msg* msg) {
     return 1;
 }
 
+int Operacoes::solicitaDesligamentoSrv(){
+    
+    int len;
+    Msg *msg;
+    char *buffer;
+    
+    log_write("Delisgando Servidor - Criando pacote");
+    msg = new Msg();
+    msg->setType('X');
+    msg->getBuffer(&buffer);
 
+    len = msg->getBuffer(&buffer);
+    log_write("Delisgando Servidor - Tamanaho do buffer: %d bytes.", len);
+    
+    if(len <= 0){
+        log_write("Erro de leitura");
+        delete(msg);
+        return 0;
+    }
+    
+    len = this->getSocketClient()->writeSocket(buffer, len);
+    log_write("Delisgando Servidor - Dados enviados: %d bytes.", len);
+    
+    if(len <= 0){
+        log_write("Erro de leitura");
+        delete(msg);
+        return 0;
+    }
+    
+    return 1;
+}

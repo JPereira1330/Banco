@@ -75,6 +75,7 @@ private:
     
     int getServerConta(Conta *conta, Msg *msg, int len);
     int readMsg(SocketClient *sc, Msg *msg);
+    int solicitaDesligamentoSrv();
     
 };
 
