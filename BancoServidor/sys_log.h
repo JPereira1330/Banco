@@ -14,6 +14,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+#ifdef DEBUG
+#define DEBUG 0
+#else
+#define DEBUG 1
+#endif
 
 #define log_write(D_FORMAT, ...) log_write_i(__FILE__, __LINE__, D_FORMAT, ##__VA_ARGS__)
   

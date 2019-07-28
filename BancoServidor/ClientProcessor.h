@@ -26,6 +26,9 @@ public:
     void SetHandle(int handle);
     int getHandle();
     BancoDB *getBanco();
+    Conta* GetConta();
+    void SetConta(Conta* conta);
+
     
     int start();
     static void run(ClientProcessor *cp);
@@ -33,8 +36,14 @@ public:
 private:
     int handle;
     BancoDB *bancoDB;
+    Conta *conta;
     
-    static int loadAcc(Msg *msg, ClientProcessor *cp);
+    static Conta *loadAcc(Msg *msg, ClientProcessor *cp);
+    static Conta *saveAcc(Msg *msg, ClientProcessor *cp);
+    static int depositaAcc(Msg *msg, ClientProcessor *cp, Conta *conta);
+    static int saqueAcc(Msg *msg, ClientProcessor *cp, Conta *conta);
+    static int saldoAcc(ClientProcessor *cp, Conta *conta);
+    static int transferenciaAcc(Msg *msg, ClientProcessor *cp, Conta *conta);
     
 };
 

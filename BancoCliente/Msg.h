@@ -15,6 +15,7 @@ public:
     virtual ~Msg();
     
     void setType(char type);
+    char getType();
     int setBuffer(char *buffer, int len);
     
     int add(int valor);

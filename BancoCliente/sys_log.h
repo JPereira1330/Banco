@@ -15,6 +15,10 @@
 extern "C" {
 #endif
 
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+    
 #define log_write(D_FORMAT, ...) log_write_i(__FILE__, __LINE__, D_FORMAT, ##__VA_ARGS__)
   
     void log_write_i(const char *fileName, int line, const char *format, ...);

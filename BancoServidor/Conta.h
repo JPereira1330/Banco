@@ -29,7 +29,7 @@ public:
      * Metoto utilizado para sacar dinheiro da conta.
      * O dinheiro é adicionado no credito pendente.
      * @param valor - Valor a ser depositado
-     * @return 0 Sucesso, 1 Falhou. 
+     * @return 1 Sucesso, 0 Falhou. 
      */
     int sacar(int valor);
     
@@ -37,25 +37,25 @@ public:
      * Metodo utilizado para depositar dinheiro na conta.
      * O dinheiro é adicionado no credito pendente.
      * @param valor
-     * @return 0 Sucesso, 1 Falhou. 
+     * @return 1 Sucesso, 0 Falhou. 
      */
     int deposito(int valor);
     
     /**
      * Adiciona o credito pendente no saldo e zera o credito pendente.
-     * @return 0 Sucesso, 1 Falhou. 
+     * @return 1 Sucesso, 0 Falhou. 
      */
     int save();
     
     /**
      * Zera o credito pendente
-     * @return 0 Sucesso, 1 Falhou. 
+     * @return 1 Sucesso, 0 Falhou. 
      */
     int rollback();
     
     // Setter's
     void setTitularConta(string nome);
-    void setNumeroConta(int numero);
+    void setNumeroConta(int numeroConta);
     void setSaldoDisponivel(int saldo);
     void setCreditoPendente(int credito);
     

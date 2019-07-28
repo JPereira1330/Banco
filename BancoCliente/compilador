@@ -1,1 +1,1 @@
-g++ *.h *.cpp *.c -o teste -l pthread -std=c++11
+g++ *.h *.cpp *.c -D DEBUG=1 -o teste -l pthread -std=c++11
