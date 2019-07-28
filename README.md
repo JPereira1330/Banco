@@ -1,5 +1,7 @@
 # Banco JC
 
+[![CodeFactor](https://www.codefactor.io/repository/github/jpereira1330/banco/badge/master)](https://www.codefactor.io/repository/github/jpereira1330/banco/overview/master)
+
 Banco JC se trata de um projeto para exemplificar uma conexão entre cliente e servidor desenvolvida em C++, as operações realizadas pelo banco são as seguintes:
 
   - Saques
