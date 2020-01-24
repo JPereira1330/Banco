@@ -10,6 +10,10 @@ Banco JC se trata de um projeto para exemplificar uma conexão entre cliente e s
   - Criar contas
   - Conexão com mais de uma conta simultaneamente.
 
+# Contribuição
+  
+  - Thiago José Silveira ([BlindNomad](https://github.com/BlindNomad))
+
 # Fluxo de comunicação
 
   - Cliente se conecta no servidor utlizando uma porta passada como parametro de execução
